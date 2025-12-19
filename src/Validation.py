@@ -44,7 +44,7 @@ def runJavaValidation(pdfPath: str, format: str = "xml"):
         print("Error: Java not found.")
         return -1
     except Exception as e:
-        print(f"Unexpected error: {e}")
+        # print(f"Unexpected error: {e}")
         return -1
 
 def parseValidationReport(xmlReport: str):
@@ -92,8 +92,9 @@ def validatePdf(pdfPath: str, format: str = "xml") -> list:
     exitCode, output, error = runJavaValidation(pdfPath, "xml")
 
     if exitCode > 1:
-        print(error)
+        # print(error)
         # raise Exception((f"Validation failed with error {exitCode}"))
+        return [pdfPath.split('/')[-1], 'Error']
 
     # optional - generate HTML validation report
     runJavaValidation(pdfPath, "html")
@@ -101,10 +102,12 @@ def validatePdf(pdfPath: str, format: str = "xml") -> list:
     rules = []
     if exitCode == 0: 
         #print("Validation successfull.")
-        return True
-    else: # exitCode == 1:
+        return [pdfPath.split('/')[-1], True]
+    elif exitCode == 1:
         # print("Non-valid PDF/UA document")
         # rules = parseValidationReport(output)
-        return False
+        return [pdfPath.split('/')[-1], False]
+    else:
+        return [pdfPath.split('/')[-1], 'Error']
             
     # return rules
